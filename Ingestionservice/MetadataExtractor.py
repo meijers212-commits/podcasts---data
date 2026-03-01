@@ -4,8 +4,11 @@ from datetime import datetime
 
 
 class MetadataExtractor:
-    def __init__(self):
-        self.folder_path = path = os.path.join(".", "podcasts")
+
+    def __init__(self, config):
+        
+        self.config = config
+        self.folder_path = os.path(self.config.FOLDER_PATH)
 
     def get_size_in_MB(self, size_in_byts):
 
@@ -16,13 +19,12 @@ class MetadataExtractor:
         return size_in_MB
 
     def get_metadata(self):
-        folder_path = os.path.join(".", "podcasts")
 
         metadata = {}
 
-        for file in os.listdir(path=folder_path):
+        for file in os.listdir(path=self.folder_path):
 
-            file_path = os.path.join(folder_path, file)
+            file_path = os.path.join(self.folder_path, file)
 
             metadata[file] = {
                 "file_size" : os.path.getsize(file_path),

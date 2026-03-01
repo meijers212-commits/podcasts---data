@@ -1,6 +1,6 @@
 from IngestionConfig import IngestionConfig
 from metadataextractor import MetadataExtractor
-from kafkapublisher import KafkaPublisher
+from Ingestionservice.Ingestionpublisher import KafkaPublisher
 
 config = IngestionConfig()
 

@@ -26,11 +26,12 @@ class MetadataExtractor:
 
             file_path = os.path.join(self.folder_path, file)
 
-            metadata[file] = {
+            metadata.add({
+                "file_name" : file,
                 "file_size" : os.path.getsize(file_path),
                 "file_size_in_MB": self.get_size_in_MB(os.path.getsize(file_path)),
                 "create_time": str(datetime.fromtimestamp(os.path.getctime(file_path))),
-            }
+            })
 
         return metadata
 

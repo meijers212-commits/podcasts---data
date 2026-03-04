@@ -1,36 +1,39 @@
 from confluent_kafka import Consumer
+from consumptionconfig import ConsumptionConfig
+import logging
 
+config = ConsumptionConfig()
 
 class ConsumptionConsumer:
+
     def __init__(self, config):
 
-        self.config = self.config
-        self.consumer = Consumer(self.config.conf)
-        self.topic = self.config.CONSUMER_TOPIC
+        self.config = config
 
-    
-    running = True
+        self.logger = logging.getLogger(self.__class__.__name__)
 
-    async def basic_consume_loop(self):
-         
-        topics = self.topic
-        consumer = self.consumer
-        
+        self.consumer = None
 
-        try:
-            consumer.subscribe(topics)
+        # try:
+        self.logger.info("starting consumer")
 
-           
-            while True:
-                msg = await consumer.poll(timeout=1.0)
-                if msg is not None and not msg.error():
-                    print(f'Consumed: {msg.value()}')
-                    await consumer.store_offsets(message=msg)
+        self.consumer = Consumer(self.config.KAFKA_CONF)
+        self.consumer.subscribe([config.CONSUMER_TOPIC])
+        self.logger.info("consumer Started")
 
-        finally:
-            await consumer.unsubscribe()
-            await consumer.close()
+        # except Exception as e:
+        #     self.logger.error(f"ERROR occurred while Starting consumer: {e}")
+        #     raise e
 
-    def shutdown():
-        running = False
+    def get_consumer(self):
+        return self.consumer
 
+    def close_consumer(self) -> None:
+        self.logger.info("closeing consumer ...")
+        self.consumer.close()
+        self.logger.info("consumer closd")
+
+
+a = ConsumptionConsumer(config=config)
+
+b = a.get_consumer()

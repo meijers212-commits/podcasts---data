@@ -1,7 +1,6 @@
 from elasticsearch import Elasticsearch
 import logging
-from elasticsearch.helpers import bulk
-
+from elasticsearch.helpers import bulk, BulkIndexError
 
 class ElasticsearchClient:
 
@@ -12,10 +11,6 @@ class ElasticsearchClient:
         self.logger = logging.getLogger(self.__class__.__name__)
 
         self.es_client = Elasticsearch(self.config.ES_URI)
-
-        # Get Document API
-        if self.es_client.indices.exists(index=self.config.ES_INDEX):
-            self.es_client.indices.delete(index=self.config.ES_INDEX)
 
         mapping = {
             "mappings": {
@@ -28,21 +23,46 @@ class ElasticsearchClient:
             }
         }
 
-        self.es_client.indices.create(index=self.config.ES_INDEX, body=mapping)
+        if not self.es_client.indices.exists(index=self.config.ES_INDEX):
+            self.es_client.indices.create(index=self.config.ES_INDEX, body=mapping)
 
         if self.es_client.indices.exists(index=self.config.ES_INDEX):
-            self.logger.info(f"index: {self.config.ES_INDEX} created and redy!")
+            self.logger.info(f"index: {self.config.ES_INDEX} created and ready!")
 
     def index_record(self, record):
 
         res = self.es_client.index(
-            index=self.config.ES_INDEX, id=record.get("id", ""), document=record
+            index=self.config.ES_INDEX, id=str(record.get("id", "")), document=record
         )
 
         self.logger.info(f"record indexed with id: {res['_id']}")
 
-    def index_many_records(self, actions: list[dict]):
+    def index_many_records(self, data: list[dict]):
 
-        self.es_client.bulk(index=self.config.ES_INDEX, actions=actions)
-        
+        actions = [
+            {
+                "_index": self.config.ES_INDEX,
+                "_id": doc["id"],
+                "_source": {
+                    "file_name": doc["file_name"],
+                    "file_size": doc["file_size"],
+                    "file_size_in_MB": doc["file_size_in_MB"],
+                    "create_time": doc["create_time"],
+                },
+            }
+            for doc in data
+        ]
+
+        try:
+
+            bulk(self.es_client, actions)
+            self.logger.info(f"Data successfully indexed in {self.config.ES_INDEX} index.")
+
+        except BulkIndexError as e: 
+
+            self.logger.error(f"Failed to index documents to '{self.config.ES_INDEX}':") 
+            for err in e.errors:
+
+                self.logger.error(err)
+                
         self.logger.info(f"{len(actions)} records indexed successfully")

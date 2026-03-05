@@ -8,7 +8,7 @@ class MetadataExtractor:
     def __init__(self, config):
         
         self.config = config
-        self.folder_path = os.path(self.config.FOLDER_PATH)
+        self.folder_path = self.config.FOLDER_PATH
 
     def get_size_in_MB(self, size_in_byts):
 
@@ -20,13 +20,13 @@ class MetadataExtractor:
 
     def get_metadata(self):
 
-        metadata = {}
+        metadata = []
 
         for file in os.listdir(path=self.folder_path):
 
             file_path = os.path.join(self.folder_path, file)
 
-            metadata.add({
+            metadata.append({
                 "file_name" : file,
                 "file_size" : os.path.getsize(file_path),
                 "file_size_in_MB": self.get_size_in_MB(os.path.getsize(file_path)),

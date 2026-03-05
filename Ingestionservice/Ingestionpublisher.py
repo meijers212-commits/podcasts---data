@@ -1,6 +1,6 @@
 from confluent_kafka import Producer
 import json
-
+from IngestionOrchestrator import logger
 
 class KafkaPublisher:
 
@@ -17,16 +17,16 @@ class KafkaPublisher:
 
     def acked(self, err, msg):
         if err is not None:
-            print("Failed to deliver message: %s: %s" % (str(msg), str(err)))
+            logger.info("Failed to deliver message: %s: %s" % (str(msg), str(err)))
         else:
-            print("Message produced: %s" % (str(msg)))
+            logger.info("Message produced: %s" % (str(msg)))
 
-    def poblish(self, plyload):
+    def publish(self, plyload):
 
         self.producer.produce(
             self.config.PUBLISHER_TOPIC,
             value=json.dumps(plyload).encode("utf-8"),
-            callback=self.acked(),
+            callback=self.acked,
         )
 
         self.producer.poll(1)

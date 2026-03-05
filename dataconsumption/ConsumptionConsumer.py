@@ -1,6 +1,6 @@
 from confluent_kafka import Consumer
 from consumptionconfig import ConsumptionConfig
-import logging
+from consumptionorchestrator import logger
 
 config = ConsumptionConfig()
 
@@ -10,7 +10,7 @@ class ConsumptionConsumer:
 
         self.config = config
 
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = logger
 
         self.consumer = None
 

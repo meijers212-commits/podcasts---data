@@ -3,26 +3,24 @@ from consumptionconsumer import ConsumptionConsumer
 import logging
 import asyncio
 import json
-from mongoclient import MongoClient
+from mongoclient import MongoConnection
 from elasticsearchclient import ElasticsearchClient
+from logger import Logger
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
 
 config = ConsumptionConfig()
 
-consumer = ConsumptionConsumer(config=config)
+consum = ConsumptionConsumer(config=config)
+
+consumer = consum.get_consumer()
 
 topics = config.CONSUMER_TOPIC
 
-logger = logging.getLogger("Consumption Orchestrator")
+logger = Logger().get_logger()
 
-mongo = MongoClient()
+mongo = MongoConnection(config)
 
-es = ElasticsearchClient()
+es = ElasticsearchClient(config)
 
 def run():
 
@@ -43,18 +41,22 @@ def run():
                 data = json.loads(msg.value().decode("utf-8"))
                 logger.info(f"Consumed wav: {data.get('file_name', '')}")
                 
-                data["id"] = hash(data["file_name"])
+                data["id"] = str(hash(data["file_name"]))
+
+                mongo.insert_doc(data)
+                
+                if '_id' in data:
+                    del data['_id']
 
                 es.index_record(data)
                 
-                mongo.insert_doc(data)
-                logger.info(f'doc 📄: {data.get('file_name', '')} - inserted to mongodb')
+                logger.info(f"doc 📄: {data.get('file_name', '')} - inserted to mongodb")
 
             except Exception as e:
                 logger.error(f"Error occurred {e}")
                 raise e
 
-            consumer.store_offsets(message=msg)
+            
 
     finally:
         consumer.unsubscribe()

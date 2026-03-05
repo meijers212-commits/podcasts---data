@@ -1,12 +1,12 @@
 from pymongo import MongoClient
-import logging
+from consumptionorchestrator import logger
 
 
-class MongoClient:
+class MongoConnection:
 
     def __init__(self, config):
 
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = logger
 
         self.config = config
 
@@ -15,7 +15,8 @@ class MongoClient:
         try:
 
             self.client = MongoClient(self.config.MONGO_URI)
-            self.logger.info("mongo client is redy !")
+            self.client.admin.command('ping')
+            self.logger.info("mongo client is ready !")
 
         except Exception as e:
 
@@ -23,15 +24,15 @@ class MongoClient:
 
             raise e
 
-        self.client = self.get_mongo_client()
+        self.collection = self.get_mongo_client()
 
     def get_mongo_client(self):
         return self.client[self.config.MONGO_DB_NAME][self.config.MONGO_DB_COLLACTION]
 
     def insert_doc(self, doc: dict):
 
-        self.client.insertOne(doc)
+        self.collection.insert_one(doc)
 
     def insert_many_docs(self, doc_list: list[dict]):
 
-        self.client.insertMany(doc_list)
+        self.collection.insert_many(doc_list)

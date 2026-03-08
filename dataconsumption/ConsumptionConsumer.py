@@ -33,7 +33,3 @@ class ConsumptionConsumer:
         self.consumer.close()
         self.logger.info("consumer closd")
 
-
-a = ConsumptionConsumer(config=config)
-
-b = a.get_consumer()

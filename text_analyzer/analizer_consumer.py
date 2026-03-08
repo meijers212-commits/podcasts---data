@@ -4,7 +4,7 @@ from logger import logger
 
 config = AnalizerConfig()
 
-class ConsumptionConsumer:
+class AnalizerConsumer:
 
     def __init__(self, config):
 

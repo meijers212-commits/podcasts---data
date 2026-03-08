@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from consumptionorchestrator import logger
+from logger import logger
 
 
 class MongoConnection:

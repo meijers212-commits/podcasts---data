@@ -29,3 +29,4 @@ index="loggs", level=logging.DEBUG):
         cls._logger = logger 
         return logger 
  
+logger = Logger.get_logger()

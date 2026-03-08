@@ -1,6 +1,6 @@
 from elasticsearch import Elasticsearch
-import logging
 from elasticsearch.helpers import bulk, BulkIndexError
+from logger import logger
 
 class ElasticsearchClient:
 
@@ -8,7 +8,7 @@ class ElasticsearchClient:
 
         self.config = config
 
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger =logger
 
         self.es_client = Elasticsearch(self.config.ES_URI)
 

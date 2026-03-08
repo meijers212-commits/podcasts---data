@@ -1,6 +1,6 @@
 from confluent_kafka import Producer
 import json
-from IngestionOrchestrator import logger
+from logger import logger
 
 class KafkaPublisher:
 

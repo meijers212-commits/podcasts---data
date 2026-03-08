@@ -40,3 +40,5 @@ class Logger:
             logger.addHandler(logging.StreamHandler())
         cls._logger = logger
         return logger
+
+logger = Logger.get_logger()

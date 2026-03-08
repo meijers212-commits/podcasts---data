@@ -1,11 +1,9 @@
 from consumptionconfig import ConsumptionConfig
 from consumptionconsumer import ConsumptionConsumer
-import logging
-import asyncio
 import json
 from mongoclient import MongoConnection
 from elasticsearchclient import ElasticsearchClient
-from logger import Logger
+from logger import logger
 
 
 config = ConsumptionConfig()
@@ -15,8 +13,6 @@ consum = ConsumptionConsumer(config=config)
 consumer = consum.get_consumer()
 
 topics = config.CONSUMER_TOPIC
-
-logger = Logger().get_logger()
 
 mongo = MongoConnection(config)
 

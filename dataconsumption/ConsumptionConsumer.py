@@ -1,6 +1,6 @@
 from confluent_kafka import Consumer
 from consumptionconfig import ConsumptionConfig
-from consumptionorchestrator import logger
+from logger import logger
 
 config = ConsumptionConfig()
 

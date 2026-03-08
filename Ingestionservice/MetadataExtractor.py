@@ -6,10 +6,9 @@ from datetime import datetime
 class MetadataExtractor:
 
     def __init__(self, config):
-        
-        self.config = config
-        self.folder_path = self.config.FOLDER_PATH
 
+        self.config = config
+        
     def get_size_in_MB(self, size_in_byts):
 
         size_in_KB = size_in_byts / 1024
@@ -18,22 +17,12 @@ class MetadataExtractor:
 
         return size_in_MB
 
-    def get_metadata(self):
+    def get_metadata(self, file_name, file_path):
 
-        metadata = []
-
-        for file in os.listdir(path=self.folder_path):
-
-            file_path = os.path.join(self.folder_path, file)
-
-            metadata.append({
-                "file_name" : file,
-                "file_size" : os.path.getsize(file_path),
-                "file_size_in_MB": self.get_size_in_MB(os.path.getsize(file_path)),
-                "create_time": str(datetime.fromtimestamp(os.path.getctime(file_path))),
-            })
-
-        return metadata
-
-
-
+        file = {
+            "file_name": file_name,
+            "file_size": os.path.getsize(file_path),
+            "file_size_in_MB": self.get_size_in_MB(os.path.getsize(file_path)),
+            "create_time": str(datetime.fromtimestamp(os.path.getctime(file_path))),
+        }
+        return file

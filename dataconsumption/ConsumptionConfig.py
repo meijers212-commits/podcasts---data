@@ -7,9 +7,9 @@ class ConsumptionConfig:
 
         self.BOOTSTRAP_SERVERS = os.getenv("BOOTSTRAP_SERVERS", "kafka:29092")
 
-        self.CONSUMER_TOPIC = os.getenv("CONSUMER_TOPIC", "wav-metadata")
+        self.CONSUMER_TOPIC = os.getenv("CONSUMER_TOPIC", "analys_text")
 
-        self.CONSUMER_GROUP_ID = os.getenv("CONSUMER_GROUP_ID", "podcasts_anlays")
+        self.CONSUMER_GROUP_ID = os.getenv("CONSUMER_GROUP_ID", "podcasts_saver")
 
         self.KAFKA_CONF = {
             "bootstrap.servers": self.BOOTSTRAP_SERVERS,

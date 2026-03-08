@@ -36,6 +36,8 @@ def run():
             except Exception as e:
                 logger.error(f'Error occurred while andeling file {file_path} , ERROR: {e}')
                 raise e
+            
+            continue
 
     except KeyboardInterrupt:
         

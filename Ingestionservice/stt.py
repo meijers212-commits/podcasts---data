@@ -5,6 +5,7 @@ from logger import logger
 
 def speech_to_text(file_path):
     # audio = sr.AudioData.from_file(file_path)
+    
     r = sr.Recognizer()
 
     with sr.AudioFile(file_path) as f:

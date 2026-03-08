@@ -93,8 +93,8 @@ services:
     container_name: dataconsumption
     environment:
       - BOOTSTRAP_SERVERS=kafka:29092
-      - CONSUMER_TOPIC=wav-metadata
-      - CONSUMER_GROUP_ID=podcasts_anlays
+      - CONSUMER_TOPIC=analys_text
+      - CONSUMER_GROUP_ID=podcasts_save
       - ES_URI=http://elasticsearch:9200
       - ES_INDEX=podcasts
       - MONGO_URI=mongodb://mongo:27017

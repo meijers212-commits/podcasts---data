@@ -18,5 +18,5 @@ def speech_to_text(file_path):
     except sr.RequestError as e:
         logger.error("Could not request results from Google Speech Recognition service; {0}".format(e))
 
-print(speech_to_text(r".\podcasts\download (1).wav"))
+
 

@@ -16,21 +16,26 @@ folder_path = config.FOLDER_PATH
 def run():
 
     try:
-        metadata = []
 
         for file in os.listdir(path=folder_path):
 
-            file_path = os.path.join(folder_path, file)
+            try:
+                
+                file_path = os.path.join(folder_path, file)
 
-            wav = md_extractor.get_metadata(file, file_path)
+                wav = md_extractor.get_metadata(file, file_path)
 
-            wav["file_text"] = speech_to_text(file_path)
+                wav["file_text"] = speech_to_text(file_path)
 
-            logger.info(f'sending data: {wav.get("file_name","")} to kafka..')
+                logger.info(f'sending data: {wav.get("file_name","")} to kafka..')
 
-            publisher.publish(wav)
+                publisher.publish(wav)
 
-            logger.info('data sent to kafka sexssfuly !')
+                logger.info('data sent to kafka sexssfuly !')
+
+            except Exception as e:
+                logger.error(f'Error occurred while andeling file {file_path} , ERROR: {e}')
+                raise e
 
     except KeyboardInterrupt:
         

@@ -7,8 +7,8 @@ class Analizer:
 
     def __init__(self):
 
-        self.negative_word_list = self.Get_decoded_word_list(os.path.join(".", "negative_word_list.txt")).lower()
-        self.less_negative_word_list = self.Get_decoded_word_list(os.path.join(".", "less_negative_word_list.txt")).lower()
+        self.negative_word_list = self.Get_decoded_word_list(os.path.join(".", "negative_word_list.txt"))
+        self.less_negative_word_list = self.Get_decoded_word_list(os.path.join(".", "less_negative_word_list.txt"))
 
     def Get_decoded_word_list(self, file_path):
         with open(file_path, "r") as f:
@@ -18,7 +18,7 @@ class Analizer:
 
         try:
             decoded_string = decoded_bytes.decode("utf-8")
-            return decoded_string.split(",")
+            return decoded_string.lower().split(",")
         except UnicodeDecodeError:
             logger.error("Decoded data is binary, not UTF-8 text.")
 

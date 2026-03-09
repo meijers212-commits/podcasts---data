@@ -131,6 +131,30 @@ services:
       text_analyzer:
         condition: service_started
 
+  user_interface:
+    build: ./user_interface
+    image: user_interface
+    container_name: user_interface
+    ports:
+      - "5000:5000"
+    environment:
+      - ES_URI=http://elasticsearch:9200
+      - ES_INDEX=podcasts
+      - ADMIN_USER_NAME=admain
+      - ADMIN_PASSWORD=admain
+    depends_on:
+      mongo:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      kibana:
+        condition: service_started
+      text_analyzer:
+        condition: service_started
+
+
 volumes:
   kafka_data:
   esdata:

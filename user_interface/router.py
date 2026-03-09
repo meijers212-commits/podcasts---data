@@ -2,8 +2,11 @@ from fastapi import APIRouter, HTTPException
 from dal import ElasticQueris
 from logger import logger
 from router_schemas import AdminQuery
+from interface_config import UserConfig
 
-queris = ElasticQueris()
+config = UserConfig()
+
+queris = ElasticQueris(config)
 
 router = APIRouter()
 

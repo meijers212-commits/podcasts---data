@@ -29,18 +29,37 @@ class Analizer:
         negative_word = sum(text.count(word) for word in self.negative_word_list)
         less_negative_word = (sum(text.count(word) for word in self.less_negative_word_list) / 2)
 
-        bds_percent = ((negative_word + less_negative_word) / len(text.split())) * 100
+        reported_negativ = [word for word in self.negative_word_list if text.count(word) >=2]
+        reported_less_negativ = [word for word in self.less_negative_word_list if text.count(word) >=2]
+
+        if reported_negativ and reported_less_negativ:
+            bds_percent = (((negative_word * 1.8) + (less_negative_word * 2)) / len(text.split())) * 100
+
+        elif reported_negativ and not reported_less_negativ:
+            bds_percent = (((negative_word * 1.8) + less_negative_word) / len(text.split())) * 100
+
+        elif reported_less_negativ and not reported_negativ:
+            bds_percent = ((negative_word + (less_negative_word * 2)) / len(text.split())) * 100
+
+        else:
+            bds_percent = ((negative_word + less_negative_word) / len(text.split())) * 100
+
+
         object["bds_percent"] = bds_percent
 
-        threshold = (100 / 3) 
+        threshold = (5) 
         object["is_bds"] = True if object["bds_percent"] >= threshold else False
-
-        object["bds_threat_level"] = (
-            "none" if object["bds_percent"] <= (100 / 3)
-            else "medium" if object["bds_percent"] <= ((100 / 3) * 2) 
+        
+        if len(negative_word) > 3: 
+            object["bds_threat_level"] = "high"
+            
+        else:
+            object["bds_threat_level"] = (
+            "none" if object["bds_percent"] <= (5)
+            else "medium" if object["bds_percent"] <= 10
             else "high"
         )
-
+            
         return object
 
 

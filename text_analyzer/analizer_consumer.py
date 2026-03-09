@@ -1,6 +1,7 @@
 from confluent_kafka import Consumer
 from analizer_config import AnalizerConfig
 from logger import logger
+import time
 
 config = AnalizerConfig()
 
@@ -14,16 +15,32 @@ class AnalizerConsumer:
 
         self.consumer = None
 
-        # try:
         self.logger.info("starting consumer")
 
         self.consumer = Consumer(self.config.KAFKA_CONF)
-        self.consumer.subscribe([config.CONSUMER_TOPIC])
-        self.logger.info("consumer Started")
+    
+        try:
+            while True:
 
-        # except Exception as e:
-        #     self.logger.error(f"ERROR occurred while Starting consumer: {e}")
-        #     raise e
+                topics = self.consumer.list_topics(timeout=5)
+
+                if config.CONSUMER_TOPIC in topics.topics:
+
+                    logger.info(f'topic: {config.CONSUMER_TOPIC} found subscribing')
+
+                    self.consumer.subscribe([config.CONSUMER_TOPIC])
+
+                    logger.info(f'consumer subscribed to topic: {config.CONSUMER_TOPIC}')
+                    self.logger.info("consumer Started")
+                    break
+
+                else:
+
+                    logger.warning(f'topic: {config.CONSUMER_TOPIC} not found yet tring agen')
+                    time.sleep(3)
+                    
+        except Exception as e:
+            logger.error(f'error getting topic list end subscribing, {e}')
 
     def get_consumer(self):
         return self.consumer

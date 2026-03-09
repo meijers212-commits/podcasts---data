@@ -52,6 +52,7 @@ class Analizer:
         
         if negative_word > 3: 
             object["bds_threat_level"] = "high"
+            object["is_bds"] = True
             
         else:
             object["bds_threat_level"] = (

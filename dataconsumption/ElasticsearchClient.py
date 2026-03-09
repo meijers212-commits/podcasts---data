@@ -20,7 +20,7 @@ class ElasticsearchClient:
                     "file_size_in_MB": {"type": "integer"},
                     "create_time": {"type": "text"},
                     "bds_percent": {"type": "integer"},
-                    "is_bds": {"type": "keyword"},
+                    "is_bds": {"type": "boolean"},
                     "bds_threat_level": {"type": "keyword"},
                 }
             }

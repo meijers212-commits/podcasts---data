@@ -50,7 +50,7 @@ class Analizer:
         threshold = (5) 
         object["is_bds"] = True if object["bds_percent"] >= threshold else False
         
-        if len(negative_word) > 3: 
+        if negative_word > 3: 
             object["bds_threat_level"] = "high"
             
         else:

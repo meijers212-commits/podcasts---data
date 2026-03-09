@@ -19,10 +19,14 @@ class ElasticsearchClient:
                     "file_size": {"type": "integer"},
                     "file_size_in_MB": {"type": "integer"},
                     "create_time": {"type": "text"},
+                    "bds_percent": {"type": "integer"},
+                    "is_bds": {"type": "keyword"},
+                    "bds_threat_level": {"type": "keyword"},
                 }
             }
         }
 
+        
         if not self.es_client.indices.exists(index=self.config.ES_INDEX):
             self.es_client.indices.create(index=self.config.ES_INDEX, body=mapping)
 
@@ -48,6 +52,9 @@ class ElasticsearchClient:
                     "file_size": doc["file_size"],
                     "file_size_in_MB": doc["file_size_in_MB"],
                     "create_time": doc["create_time"],
+                    "bds_percent": doc["bds_percent"],
+                    "is_bds": doc["is_bds"],
+                    "bds_threat_level": doc["bds_threat_level"],
                 },
             }
             for doc in data

@@ -11,7 +11,7 @@ analizer_consumer = AnalizerConsumer(config)
 
 publisher = AnalizerPublisher(config)
 
-consumer = AnalizerConsumer.get_consumer()
+consumer = analizer_consumer.get_consumer()
 
 analizer = Analizer()
 

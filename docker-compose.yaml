@@ -3,7 +3,7 @@ services:
     image: confluentinc/cp-kafka:7.8.3
     container_name: kafka
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
+      test: [ "CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,23 +25,23 @@ services:
       - kafka_data:/var/lib/kafka/data
 
   elasticsearch:
-      image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
-      container_name: elasticsearch
-      environment:
-        - discovery.type=single-node
-        - xpack.security.enabled=false
-        - xpack.security.enrollment.enabled=false
-        - ES_JAVA_OPTS=-Xms1g -Xmx1g
-      ports:
-        - "9200:9200"
-      volumes:
-        - esdata:/usr/share/elasticsearch/data
-      healthcheck:
-        test: ["CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1"]
-        interval: 15s
-        timeout: 10s
-        retries: 10
-        start_period: 40s
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
 
   kibana:
     image: kibana:8.12.0
@@ -60,9 +60,9 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongo-data:/data/db  
+      - mongo-data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -77,6 +77,25 @@ services:
       - FOLDER_PATH=/app/podcasts
     volumes:
       - ./podcasts:/app/podcasts
+    depends_on:
+      mongo:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      kibana:
+        condition: service_started
+
+  text_analyzer:
+    build: ./text_analyzer
+    image: text_analyzer
+    container_name: text_analyzer
+    environment:
+      - BOOTSTRAP_SERVERS=kafka:29092
+      - CONSUMER_TOPIC=wav-metadata
+      - CONSUMER_GROUP_ID=podcasts_anlays
+      - PUBLISHER_TOPIC=analys_text
     depends_on:
       mongo:
         condition: service_healthy
@@ -108,6 +127,8 @@ services:
       kafka:
         condition: service_healthy
       kibana:
+        condition: service_started
+      text_analyzer:
         condition: service_started
 
 volumes:

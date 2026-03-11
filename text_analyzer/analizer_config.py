@@ -19,4 +19,5 @@ class AnalizerConfig:
             "auto.offset.reset": "earliest",
         }
 
-       
+
+config = AnalizerConfig()

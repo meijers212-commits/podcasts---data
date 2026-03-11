@@ -20,7 +20,7 @@ class MongoConnection:
 
         except Exception as e:
 
-            self.logger.info("ERROR occurred while creating mongo client")
+            self.logger.exception("ERROR occurred while creating mongo client")
 
             raise e
 

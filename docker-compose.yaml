@@ -105,6 +105,8 @@ services:
         condition: service_healthy
       kibana:
         condition: service_started
+      ingestionservice:
+        condition: service_started
 
   dataconsumption:
     build: ./dataconsumption

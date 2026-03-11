@@ -8,5 +8,7 @@ class IngestionConfig:
         self.PUBLISHER_TOPIC = os.getenv('PUBLISHER_TOPIC', 'wav-metadata')
         self.FOLDER_PATH = os.getenv('FOLDER_PATH' , '/app/podcasts')
 
+    # def validate(self):
 
+            
         

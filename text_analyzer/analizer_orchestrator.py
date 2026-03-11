@@ -1,11 +1,11 @@
-from analizer_config import AnalizerConfig
+from analizer_config import config
 from analizer_consumer import AnalizerConsumer
 from analizer_publiser import AnalizerPublisher
 from text_analysis import Analizer
 from logger import logger
 import json
 
-config = AnalizerConfig()
+config = config
 
 analizer_consumer = AnalizerConsumer(config)
 

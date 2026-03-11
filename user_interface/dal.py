@@ -29,7 +29,7 @@ class ElasticQueris:
         }
 
         response = self.client.search(index=self.es_index, body=query)
-        return response["hits"]["hits"]
+        return [hit["_source"] for hit in response["hits"]["hits"]]
 
     # 2
     def serch_by_word(self, word):
@@ -37,7 +37,7 @@ class ElasticQueris:
         query = {"query": {"match": {"file_text": word}}}
 
         response = self.client.search(index=self.es_index, body=query)
-        return response["hits"]["hits"]
+        return [hit["_source"] for hit in response["hits"]["hits"]]
 
     # 3
     def get_by_bds_threat_level(self, threat_level):
@@ -45,7 +45,7 @@ class ElasticQueris:
         query = {"query": {"match": {"bds_threat_level": threat_level}}}
 
         response = self.client.search(index=self.es_index, body=query)
-        return response["hits"]["hits"]
+        return [hit["_source"] for hit in response["hits"]["hits"]]
 
     # 4
     def admain_query(self, user_name, password, query):
@@ -60,7 +60,8 @@ class ElasticQueris:
                 if not response["hits"]["hits"]:
                     return {"message": "No results found for your query"}
                 
-                return response["hits"]["hits"]
+                return [hit["_source"] for hit in response["hits"]["hits"]]
+
 
             else:
                 return {"Error": f"Unauthorized user {user_name}"}
@@ -84,7 +85,7 @@ class ElasticQueris:
         }
 
         response = self.client.search(index=self.es_index, body=query)
-        return response["hits"]["hits"]
+        return [hit["_source"] for hit in response["hits"]["hits"]]
     
 
     # 6
@@ -100,7 +101,7 @@ class ElasticQueris:
 
         response = self.client.search(index=self.es_index, body=query)
         return response["aggregations"]["bds_threat_level_count"]["buckets"]
-    
+        
 
     
 

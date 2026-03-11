@@ -1,9 +1,6 @@
 from confluent_kafka import Consumer
-from analizer_config import AnalizerConfig
 from logger import logger
 import time
-
-config = AnalizerConfig()
 
 class AnalizerConsumer:
 
@@ -17,7 +14,8 @@ class AnalizerConsumer:
 
         self.logger.info("starting consumer")
 
-        self.consumer = Consumer(self.config.KAFKA_CONF)
+        if not self.consumer:
+            self.consumer = Consumer(self.config.KAFKA_CONF)
     
         try:
             while True:

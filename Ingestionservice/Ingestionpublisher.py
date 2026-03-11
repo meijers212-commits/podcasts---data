@@ -21,11 +21,11 @@ class KafkaPublisher:
         else:
             logger.info("Message produced: %s" % (str(msg)))
 
-    def publish(self, plyload):
+    def publish(self, payload):
 
         self.producer.produce(
             self.config.PUBLISHER_TOPIC,
-            value=json.dumps(plyload).encode("utf-8"),
+            value=json.dumps(payload).encode("utf-8"),
             callback=self.acked,
         )
 

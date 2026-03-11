@@ -6,19 +6,20 @@ from elasticsearchclient import ElasticsearchClient
 from logger import logger
 
 
-config = ConsumptionConfig()
-
-consum = ConsumptionConsumer(config=config)
-
-consumer = consum.get_consumer()
-
-topics = config.CONSUMER_TOPIC
-
-mongo = MongoConnection(config)
-
-es = ElasticsearchClient(config)
 
 def run():
+    
+    config = ConsumptionConfig()
+
+    consum = ConsumptionConsumer(config=config)
+
+    consumer = consum.get_consumer()
+
+    topics = config.CONSUMER_TOPIC
+
+    mongo = MongoConnection(config)
+
+    es = ElasticsearchClient(config)
 
     try:
 

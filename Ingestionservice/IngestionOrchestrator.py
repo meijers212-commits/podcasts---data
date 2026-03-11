@@ -1,19 +1,20 @@
 from IngestionConfig import IngestionConfig
-from metadataextractor import MetadataExtractor
+from metadataerxtractor import MetadataExtractor
 from Ingestionpublisher import KafkaPublisher
 from logger import logger
 from stt import speech_to_text
 import os 
 
-config = IngestionConfig()
-
-md_extractor = MetadataExtractor(config)
-
-publisher = KafkaPublisher(config)
-
-folder_path = config.FOLDER_PATH
 
 def run():
+    
+    config = IngestionConfig()
+
+    md_extractor = MetadataExtractor(config)
+
+    publisher = KafkaPublisher(config)
+
+    folder_path = config.FOLDER_PATH
 
     try:
 
@@ -35,9 +36,6 @@ def run():
 
             except Exception as e:
                 logger.error(f'Error occurred while andeling file {file_path} , ERROR: {e}')
-                raise e
-            
-            continue
 
     except KeyboardInterrupt:
         

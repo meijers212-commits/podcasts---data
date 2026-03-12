@@ -1,5 +1,6 @@
 import os
-
+import sys
+from analizer_orchestrator import logger
 
 class AnalizerConfig:
 
@@ -19,5 +20,27 @@ class AnalizerConfig:
             "auto.offset.reset": "earliest",
         }
 
+        self.validate()
+
+    def validate(self):
+
+        required_vars = {
+            "BOOTSTRAP_SERVERS": self.BOOTSTRAP_SERVERS,
+            "CONSUMER_TOPIC": self.CONSUMER_TOPIC,
+            "CONSUMER_GROUP_ID": self.CONSUMER_GROUP_ID,
+            "PUBLISHER_TOPIC": self.PUBLISHER_TOPIC,
+        }
+
+        missing = []
+
+        for name, value in required_vars.items():
+            if value is None or value.strip() == "":
+                missing.append(name)
+
+        if missing:
+            logger.error(f"Necessary environment variables are missing to run the service: {missing}")
+            sys.exit(1)
+
+        logger.info("All variables have been loaded and are ready to use.")
 
 config = AnalizerConfig()

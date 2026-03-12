@@ -1,18 +1,21 @@
-from IngestionConfig import IngestionConfig
-from metadataerxtractor import MetadataExtractor
-from Ingestionpublisher import KafkaPublisher
-from logger import logger
+from ingestion_config import config
+from metadata_erxtractor import MetadataExtractor
 from stt import speech_to_text
-import os 
+import os
+from shared.kafka.kafka_producer import KafkaPublisher
+from shared.logging.logger import Logger
 
+logger = Logger.get_logger(name="ingestion_service")
 
 def run():
-    
-    config = IngestionConfig()
 
     md_extractor = MetadataExtractor(config)
 
-    publisher = KafkaPublisher(config)
+    publisher = KafkaPublisher(
+        logger=logger,
+        bootstrap_service=config.BOOTSTRAP_SERVERS,
+        publisher_topic=config.PUBLISHER_TOPIC,
+    )
 
     folder_path = config.FOLDER_PATH
 
@@ -21,7 +24,7 @@ def run():
         for file in os.listdir(path=folder_path):
 
             try:
-                
+
                 file_path = os.path.join(folder_path, file)
 
                 wav = md_extractor.get_metadata(file, file_path)
@@ -32,13 +35,15 @@ def run():
 
                 publisher.publish(wav)
 
-                logger.info('data sent to kafka sexssfuly !')
+                logger.info("data sent to kafka sexssfuly !")
 
             except Exception as e:
-                logger.error(f'Error occurred while andeling file {file_path} , ERROR: {e}')
+                logger.error(
+                    f"Error occurred while andeling file {file_path} , ERROR: {e}"
+                )
 
     except KeyboardInterrupt:
-        
+
         logger.info("stopping ...")
 
     finally:

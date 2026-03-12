@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 from router import router
+from shared.logging.logger import Logger
+
+logger = Logger.get_logger(name="user_interface")
 
 app = FastAPI()
 

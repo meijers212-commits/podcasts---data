@@ -1,6 +1,6 @@
 import speech_recognition as sr
 from os import path
-from logger import logger
+from ingestion_orchestrator import logger
 
 
 def speech_to_text(file_path):

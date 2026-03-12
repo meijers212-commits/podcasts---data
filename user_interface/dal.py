@@ -1,21 +1,24 @@
-from es_client import ElasticsearchClient
 from interface_config import UserConfig
-from logger import logger
+from main import logger
+from shared.elasticserch.elasticserch_client import ElasticsearchClient
+from interface_config import config
 
-config = UserConfig()
-
-es = ElasticsearchClient(config)
+es = ElasticsearchClient(
+    logger=logger, 
+    elastic_uri=config.ES_URI, 
+    elastic_index=config.ES_INDEX
+)
 
 client = es.es_client
 
 
 class ElasticQueris:
 
-    def __init__(self, config):
+    def __init__(self, es_index, config):
 
         self.config = config
 
-        self.es_index = self.config.ES_INDEX
+        self.es_index = es_index
 
         self.client = es.es_client
 
@@ -59,49 +62,36 @@ class ElasticQueris:
 
                 if not response["hits"]["hits"]:
                     return {"message": "No results found for your query"}
-                
-                return [hit["_source"] for hit in response["hits"]["hits"]]
 
+                return [hit["_source"] for hit in response["hits"]["hits"]]
 
             else:
                 return {"Error": f"Unauthorized user {user_name}"}
-            
+
         except Exception as e:
-            logger.error(f'error while processing admin query, Error: {e}')
+            logger.error(f"error while processing admin query, Error: {e}")
 
             return {f"Error while processing query. Check syntax": {e}}
 
     # 5
-    def get_all_bds_by_size(self,size):
-        
+    def get_all_bds_by_size(self, size):
+
         max_size = 10000
 
-        query = {"size":min(size, max_size),
-                 "query": {
-            "term": {
-                "is_bds": True
-                }
-            }
-        }
+        query = {"size": min(size, max_size), "query": {"term": {"is_bds": True}}}
 
         response = self.client.search(index=self.es_index, body=query)
         return [hit["_source"] for hit in response["hits"]["hits"]]
-    
 
     # 6
     def get_count_of_etch_threat_level(self):
 
-        query = {"size": 0,
-                    "aggs": {
-                    "bds_threat_level_count": {
-                    "terms": { "field": "bds_threat_level" }
-                    }
-                }
-                }
+        query = {
+            "size": 0,
+            "aggs": {
+                "bds_threat_level_count": {"terms": {"field": "bds_threat_level"}}
+            },
+        }
 
         response = self.client.search(index=self.es_index, body=query)
         return response["aggregations"]["bds_threat_level_count"]["buckets"]
-        
-
-    
-

@@ -1,51 +1,63 @@
 from analizer_config import config
-from analizer_consumer import AnalizerConsumer
-from analizer_publiser import AnalizerPublisher
 from text_analysis import Analizer
-from logger import logger
 import json
+from shared.logging.logger import Logger
+from shared.kafka.kafka_consumer import KafkaConsumer
+from shared.kafka.kafka_producer import KafkaPublisher
 
-config = config
+logger = Logger.get_logger(name="text_analyzer")
 
-analizer_consumer = AnalizerConsumer(config)
+def run():
 
-publisher = AnalizerPublisher(config)
+    analizer_consumer = KafkaConsumer(
+        logger=logger,
+        kafka_config=config.KAFKA_CONF,
+        consumer_topic=config.CONSUMER_TOPIC
+    )
 
-consumer = analizer_consumer.get_consumer()
+    publisher = KafkaPublisher(
+        logger=logger,
+        bootstrap_service=config.BOOTSTRAP_SERVERS,
+        publisher_topic=config.PUBLISHER_TOPIC,
+        client_id="text_analizer"
+    )
 
-analizer = Analizer()
+    consumer = analizer_consumer.get_consumer()
 
-try:
+    analizer = Analizer()
 
-    while True:
+    try:
 
-        msg = consumer.poll(timeout=1.0)
+        while True:
 
-        if msg is None:
-            continue
+            msg = consumer.poll(timeout=1.0)
 
-        if msg.error():
-            logger.error(f"Kafka Error: {msg.error()}")
-            continue
+            if msg is None:
+                continue
 
-        try:
-            data = json.loads(msg.value().decode("utf-8"))
-            logger.info(f"Consumed wav: {data.get('file_name', '')}")
+            if msg.error():
+                logger.error(f"Kafka Error: {msg.error()}")
+                continue
 
-            logger.info(f"processing wav: {data.get('file_name', '')}")
-            
-            object = analizer.bds_percent(data)
-            
-            publisher.publish(object)
-               
-            logger.info(f"doc 📄: {data.get('file_name', '')} - sent to kafka")
+            try:
+                data = json.loads(msg.value().decode("utf-8"))
+                logger.info(f"Consumed wav: {data.get('file_name', '')}")
 
-        except Exception as e:
-            logger.error(f"Error occurred {e}")
-            continue
+                logger.info(f"processing wav: {data.get('file_name', '')}")
 
-finally:
-    consumer.unsubscribe()
-    consumer.close()
-    publisher.flush()
-    
+                object = analizer.bds_percent(data)
+
+                publisher.publish(object)
+
+                logger.info(f"doc 📄: {data.get('file_name', '')} - sent to kafka")
+
+            except Exception as e:
+                logger.error(f"Error occurred {e}")
+                continue
+
+    finally:
+        consumer.unsubscribe()
+        consumer.close()
+        publisher.flush()
+
+run()

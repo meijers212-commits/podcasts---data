@@ -4,7 +4,7 @@ import json
 
 class KafkaPublisher:
 
-    def __init__(self, logger, bootstrap_service, publisher_topic):
+    def __init__(self, logger, bootstrap_service, publisher_topic, client_id):
 
         self.publisher_topic = publisher_topic
 
@@ -12,7 +12,7 @@ class KafkaPublisher:
 
         self.conf = {
             "bootstrap.servers": bootstrap_service,
-            "client.id": "Ingestionservice",
+            "client.id": client_id,
         }
 
         try:

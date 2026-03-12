@@ -1,20 +1,17 @@
 from pymongo import MongoClient
 
-
-
 class MongoConnection:
 
-    def __init__(self, config, logger, mongo_uri, mongo_db, mongo_collection):
+    def __init__(self, logger, mongo_uri, mongo_db, mongo_collection):
         
         self.mongop_db = mongo_db
 
         self.mongo_collection = mongo_collection
-
+        
         self.logger = logger
 
-        self.config = config
-
         self.client = None
+
 
         try:
 
@@ -24,11 +21,7 @@ class MongoConnection:
 
         except Exception as e:
 
-            self.logger.exception("ERROR occurred while creating mongo client")
-
-            raise e
-
-        self.collection = self.get_mongo_client()
+            self.logger.exception(f"ERROR occurred while creating mongo client: {e}")
 
     def get_mongo_collection(self):
         return self.client[self.mongop_db][self.mongo_collection]

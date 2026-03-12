@@ -1,20 +1,28 @@
 from confluent_kafka import Producer
 import json
 
+
 class KafkaPublisher:
 
-    def __init__(self, config, logger):
+    def __init__(self, logger, bootstrap_service, publisher_topic):
 
-        self.config = config
+        self.publisher_topic = publisher_topic
 
         self.logger = logger
 
         self.conf = {
-            "bootstrap.servers": self.config.BOOTSTRAP_SERVERS,
+            "bootstrap.servers": bootstrap_service,
             "client.id": "Ingestionservice",
         }
 
-        self.producer = Producer(self.conf)
+        try:
+
+            logger.info("starting Publisher...")
+            self.producer = Producer(self.conf)
+            logger.info("Publisher started successfully...")
+
+        except Exception as e:
+            logger.exception(f"Publisher activation failed, Error: {e}")
 
     def acked(self, err, msg):
         if err is not None:
@@ -25,7 +33,7 @@ class KafkaPublisher:
     def publish(self, payload):
 
         self.producer.produce(
-            self.config.PUBLISHER_TOPIC,
+            self.publisher_topic,
             value=json.dumps(payload).encode("utf-8"),
             callback=self.acked,
         )

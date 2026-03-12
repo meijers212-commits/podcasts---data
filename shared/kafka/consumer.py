@@ -1,21 +1,22 @@
 from confluent_kafka import Consumer
 import time
 
+class KafkaConsumer:
 
-
-class ConsumptionConsumer:
-
-    def __init__(self, config, logger):
-
-        self.config = config
+    def __init__(self, logger, kafka_config, consumer_topic):
 
         self.logger = logger
 
         self.consumer = None
 
-        self.logger.info("starting consumer")
+        try:
 
-        self.consumer = Consumer(self.config.KAFKA_CONF)
+            logger.info("starting consumer")
+            self.consumer = Consumer(kafka_config)
+            logger.info("consumer started successfully...")
+
+        except Exception as e:
+            logger.exception(f"consumer activation failed., Error: {e}")
 
         try:
 
@@ -23,20 +24,20 @@ class ConsumptionConsumer:
 
                 topics = self.consumer.list_topics(timeout=5)
 
-                if config.CONSUMER_TOPIC in topics.topics:
+                if consumer_topic in topics.topics:
 
-                    logger.info(f'topic: {config.CONSUMER_TOPIC} found subscribing')
+                    logger.info(f'topic: {consumer_topic} found subscribing')
 
-                    self.consumer.subscribe([config.CONSUMER_TOPIC])
+                    self.consumer.subscribe([consumer_topic])
 
-                    logger.info(f'consumer subscribed to topic: {config.CONSUMER_TOPIC}')
+                    logger.info(f'consumer subscribed to topic: {consumer_topic}')
                     self.logger.info("consumer Started")
 
                     break
 
                 else:
 
-                    logger.warning(f'topic: {config.CONSUMER_TOPIC} not found yet tring agen')
+                    logger.warning(f'topic: {consumer_topic} not found yet tring agen')
                     time.sleep(3)
 
         except Exception as e:

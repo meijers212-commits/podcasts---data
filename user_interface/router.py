@@ -1,13 +1,23 @@
 from fastapi import APIRouter, HTTPException
 from dal import ElasticQueris
 from router_schemas import AdminQuery
-from interface_config import config
+from interface_config import UserConfig
+from shared.logging.logger import Logger
+from shared.elasticserch.elasticserch_client import ElasticsearchClient
 
+logger = Logger.get_logger(name="user_interface")
+
+config = UserConfig(logger=logger)
+
+es = ElasticsearchClient(
+    logger=logger, elastic_uri=config.ES_URI, elastic_index=config.ES_INDEX
+)
+
+client = es.es_client
 
 queris = ElasticQueris(
-    es_index=config.ES_INDEX,
-    config=config
-    )
+    config=config, logger=logger, es_index=config.ES_INDEX, client=client
+)
 
 router = APIRouter()
 
@@ -20,7 +30,7 @@ def get_top_percentes(count):
 
     if not res:
         raise HTTPException(status_code=404, detail=f"no result found,")
-    
+
     return res
 
 
@@ -32,10 +42,8 @@ def query_by_word(word):
 
     if not res:
         raise HTTPException(status_code=404, detail=f"no result found,")
-    
-    return res
 
-    
+    return res
 
 
 # 3
@@ -46,7 +54,7 @@ def query_by_thereat_level(threat_level):
 
     if not res:
         raise HTTPException(status_code=404, detail=f"no result found,")
-    
+
     return res
 
 
@@ -58,9 +66,8 @@ def admin_free_query(ditalis: AdminQuery):
 
     if not res:
         raise HTTPException(status_code=404, detail=f"no result found,")
-    
-    return res
 
+    return res
 
 
 # 5
@@ -71,9 +78,8 @@ def get_bds_by_size(size: int):
 
     if not res:
         raise HTTPException(status_code=404, detail=f"no result found,")
-    
-    return res
 
+    return res
 
 
 # 6
@@ -84,5 +90,5 @@ def count_of_etch_threat_level():
 
     if not res:
         raise HTTPException(status_code=404, detail=f"no result found,")
-    
+
     return res

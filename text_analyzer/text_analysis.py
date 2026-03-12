@@ -1,12 +1,12 @@
 import base64
-from logger import logger
 import os
 
 
 class Analizer:
 
-    def __init__(self):
-
+    def __init__(self, logger):
+        
+        self.logger = logger
         self.negative_word_list = self.Get_decoded_word_list(
             os.path.join(".", "negative_word_list.txt")
         )
@@ -24,7 +24,7 @@ class Analizer:
             decoded_string = decoded_bytes.decode("utf-8")
             return decoded_string.lower().split(",")
         except UnicodeDecodeError:
-            logger.error("Decoded data is binary, not UTF-8 text.")
+            self.logger.error("Decoded data is binary, not UTF-8 text.")
 
     def bds_percent(self, object):
 

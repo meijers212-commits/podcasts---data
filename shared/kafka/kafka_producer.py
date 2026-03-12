@@ -1,7 +1,6 @@
 from confluent_kafka import Producer
 import json
 
-
 class KafkaPublisher:
 
     def __init__(self, logger, bootstrap_service, publisher_topic, client_id):

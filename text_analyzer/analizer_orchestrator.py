@@ -1,13 +1,16 @@
-from analizer_config import config
+from shared.logging.logger import Logger
+from analizer_config import AnalizerConfig
 from text_analysis import Analizer
 import json
-from shared.logging.logger import Logger
 from shared.kafka.kafka_consumer import KafkaConsumer
 from shared.kafka.kafka_producer import KafkaPublisher
 
 logger = Logger.get_logger(name="text_analyzer")
 
+
 def run():
+    
+    config = AnalizerConfig(logger=logger)
 
     analizer_consumer = KafkaConsumer(
         logger=logger,
@@ -24,7 +27,7 @@ def run():
 
     consumer = analizer_consumer.get_consumer()
 
-    analizer = Analizer()
+    analizer = Analizer(logger=logger)
 
     try:
 

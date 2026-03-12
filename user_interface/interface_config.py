@@ -1,10 +1,11 @@
 import os
-from main import logger
 import sys
 
 class UserConfig:
 
-    def __init__(self):
+    def __init__(self, logger):
+
+        self.logger = logger
 
         self.ES_URI = os.getenv("ES_URI", "http://elasticserch:9200")
         self.ES_INDEX = os.getenv("ES_INDEX", "podcasts")
@@ -30,12 +31,12 @@ class UserConfig:
                 missing.append(name)
 
         if missing:
-            logger.error(
+            self.logger.error(
                 f"Necessary environment variables are missing to run the service: {missing}"
             )
             sys.exit(1)
 
-        logger.info("All variables have been loaded and are ready to use.")
+        self.logger.info("All variables have been loaded and are ready to use.")
 
 
-config = UserConfig()
+

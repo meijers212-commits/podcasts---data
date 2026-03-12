@@ -68,13 +68,15 @@ services:
       retries: 5
 
   ingestionservice:
-    build: ./ingestionservice
-    image: ingestionservice
-    container_name: ingestionservice
+    build: 
+      context: .
+      dockerfile: ./ingestionservice/dockerfile
     environment:
       - BOOTSTRAP_SERVERS=kafka:29092
       - PUBLISHER_TOPIC=wav-metadata
       - FOLDER_PATH=/app/podcasts
+      - MONGO_URI=mongodb://mongo:27017
+      - MONGO_DB_NAME=files_db
     volumes:
       - ./podcasts:/app/podcasts
     depends_on:
@@ -88,9 +90,9 @@ services:
         condition: service_started
 
   text_analyzer:
-    build: ./text_analyzer
-    image: text_analyzer
-    container_name: text_analyzer
+    build: 
+      context: .
+      dockerfile: ./text_analyzer/dockerfile
     environment:
       - BOOTSTRAP_SERVERS=kafka:29092
       - CONSUMER_TOPIC=wav-metadata
@@ -109,9 +111,9 @@ services:
         condition: service_started
 
   dataconsumption:
-    build: ./dataconsumption
-    image: dataconsumption
-    container_name: dataconsumption
+    build: 
+      context: .
+      dockerfile: ./dataconsumption/dockerfile
     environment:
       - BOOTSTRAP_SERVERS=kafka:29092
       - CONSUMER_TOPIC=analys_text
@@ -134,9 +136,9 @@ services:
         condition: service_started
 
   user_interface:
-    build: ./user_interface
-    image: user_interface
-    container_name: user_interface
+    build: 
+      context: .
+      dockerfile: ./user_interface/dockerfile
     ports:
       - "5000:5000"
     environment:

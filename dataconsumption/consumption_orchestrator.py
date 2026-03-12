@@ -1,14 +1,15 @@
-from consumption_config import config
-import json
 from shared.logging.logger import Logger
+from consumption_config import ConsumptionConfig
+import json
 from shared.kafka.kafka_consumer import KafkaConsumer
 from shared.mongo.mongo_client import MongoConnection
 from shared.elasticserch.elasticserch_client import ElasticsearchClient
 
 logger = Logger.get_logger(name="data_consumption")
 
-
 def run():
+    
+    config = ConsumptionConfig(logger=logger)
 
     consum = KafkaConsumer(
         logger=logger,
@@ -21,8 +22,8 @@ def run():
     mongo = MongoConnection(
         logger=logger,
         mongo_uri=config.MONGO_URI,
-        mongo_db=config.MONGO_DB_NAME,
-        mongo_collection=config.MONGO_COLLACTION,
+        db_name=config.MONGO_DB_NAME,
+        collection_name=config.MONGO_COLLACTION,
     )
 
     es = ElasticsearchClient(

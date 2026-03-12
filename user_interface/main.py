@@ -1,17 +1,12 @@
 from fastapi import FastAPI
 from router import router
-from shared.logging.logger import Logger
 
-logger = Logger.get_logger(name="user_interface")
 
 app = FastAPI()
 
 app.include_router(router=router)
 
-if __name__=="__main__":
+if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app",host="127.0.0.1", port=5000)
 
-
-
-    
+    uvicorn.run("main:app", host="127.0.0.1", port=5000)

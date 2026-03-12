@@ -1,10 +1,11 @@
 import os
 import sys
-from analizer_orchestrator import logger
 
 class AnalizerConfig:
 
-    def __init__(self):
+    def __init__(self, logger):
+
+        self.logger = logger
 
         self.BOOTSTRAP_SERVERS = os.getenv("BOOTSTRAP_SERVERS", "kafka:29092")
 
@@ -38,9 +39,8 @@ class AnalizerConfig:
                 missing.append(name)
 
         if missing:
-            logger.error(f"Necessary environment variables are missing to run the service: {missing}")
+            self.logger.error(f"Necessary environment variables are missing to run the service: {missing}")
             sys.exit(1)
 
-        logger.info("All variables have been loaded and are ready to use.")
+        self.logger.info("All variables have been loaded and are ready to use.")
 
-config = AnalizerConfig()

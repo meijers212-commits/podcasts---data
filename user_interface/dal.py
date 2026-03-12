@@ -1,26 +1,15 @@
-from interface_config import UserConfig
-from main import logger
-from shared.elasticserch.elasticserch_client import ElasticsearchClient
-from interface_config import config
-
-es = ElasticsearchClient(
-    logger=logger, 
-    elastic_uri=config.ES_URI, 
-    elastic_index=config.ES_INDEX
-)
-
-client = es.es_client
-
 
 class ElasticQueris:
 
-    def __init__(self, es_index, config):
+    def __init__(self, config, logger, es_index, client):
+
+        self.logger = logger
 
         self.config = config
 
         self.es_index = es_index
 
-        self.client = es.es_client
+        self.client = client
 
     # 1
     def get_top_bds_percent(self, count):
@@ -69,7 +58,7 @@ class ElasticQueris:
                 return {"Error": f"Unauthorized user {user_name}"}
 
         except Exception as e:
-            logger.error(f"error while processing admin query, Error: {e}")
+            self.logger.error(f"error while processing admin query, Error: {e}")
 
             return {f"Error while processing query. Check syntax": {e}}
 

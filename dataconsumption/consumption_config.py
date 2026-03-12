@@ -1,7 +1,7 @@
 import os
 import sys
 
-class AnalizerConfig:
+class ConsumptionConfig:
 
     def __init__(self, logger):
 
@@ -9,17 +9,24 @@ class AnalizerConfig:
 
         self.BOOTSTRAP_SERVERS = os.getenv("BOOTSTRAP_SERVERS", "kafka:29092")
 
-        self.CONSUMER_TOPIC = os.getenv("CONSUMER_TOPIC", "wav-metadata")
+        self.CONSUMER_TOPIC = os.getenv("CONSUMER_TOPIC", "analys_text")
 
-        self.CONSUMER_GROUP_ID = os.getenv("CONSUMER_GROUP_ID", "podcasts_anlays")
-
-        self.PUBLISHER_TOPIC = os.getenv("PUBLISHER_TOPIC", "analys_text")
+        self.CONSUMER_GROUP_ID = os.getenv("CONSUMER_GROUP_ID", "podcasts_saver")
 
         self.KAFKA_CONF = {
             "bootstrap.servers": self.BOOTSTRAP_SERVERS,
             "group.id": self.CONSUMER_GROUP_ID,
             "auto.offset.reset": "earliest",
         }
+
+        self.ES_URI = os.getenv("ES_URI", "http://elasticserch:9200")
+        self.ES_INDEX = os.getenv("ES_INDEX", "podcasts")
+
+        self.MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongo:27017")
+
+        self.MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "podcasts")
+
+        self.MONGO_COLLACTION = os.getenv("MONGO_DB_COLLACTION", "podcasts_audio")
 
         self.validate()
 
@@ -29,7 +36,11 @@ class AnalizerConfig:
             "BOOTSTRAP_SERVERS": self.BOOTSTRAP_SERVERS,
             "CONSUMER_TOPIC": self.CONSUMER_TOPIC,
             "CONSUMER_GROUP_ID": self.CONSUMER_GROUP_ID,
-            "PUBLISHER_TOPIC": self.PUBLISHER_TOPIC,
+            "ES_URI": self.ES_URI,
+            "ES_INDEX": self.ES_INDEX,
+            "MONGO_URI": self.MONGO_URI,
+            "MONGO_DB_NAME": self.MONGO_DB_NAME,
+            "MONGO_DB_COLLACTION": self.MONGO_COLLACTION,
         }
 
         missing = []
@@ -39,8 +50,12 @@ class AnalizerConfig:
                 missing.append(name)
 
         if missing:
-            self.logger.error(f"Necessary environment variables are missing to run the service: {missing}")
+            self.logger.error(
+                f"Necessary environment variables are missing to run the service: {missing}"
+            )
             sys.exit(1)
 
         self.logger.info("All variables have been loaded and are ready to use.")
+
+
 

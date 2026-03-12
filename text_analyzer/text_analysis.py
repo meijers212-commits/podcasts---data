@@ -1,14 +1,18 @@
 import base64
-from logger import logger
 import os
 
 
 class Analizer:
 
-    def __init__(self):
-
-        self.negative_word_list = self.Get_decoded_word_list(os.path.join(".", "negative_word_list.txt"))
-        self.less_negative_word_list = self.Get_decoded_word_list(os.path.join(".", "less_negative_word_list.txt"))
+    def __init__(self, logger):
+        
+        self.logger = logger
+        self.negative_word_list = self.Get_decoded_word_list(
+            os.path.join(".", "negative_word_list.txt")
+        )
+        self.less_negative_word_list = self.Get_decoded_word_list(
+            os.path.join(".", "less_negative_word_list.txt")
+        )
 
     def Get_decoded_word_list(self, file_path):
         with open(file_path, "r") as f:
@@ -20,48 +24,62 @@ class Analizer:
             decoded_string = decoded_bytes.decode("utf-8")
             return decoded_string.lower().split(",")
         except UnicodeDecodeError:
-            logger.error("Decoded data is binary, not UTF-8 text.")
+            self.logger.error("Decoded data is binary, not UTF-8 text.")
 
     def bds_percent(self, object):
 
         text = object.get("file_text", "").lower()
 
+        # Returns a number representing the number of times a word from the
+        # list of problematic or less problematic words appears in the text
         negative_word = sum(text.count(word) for word in self.negative_word_list)
-        less_negative_word = (sum(text.count(word) for word in self.less_negative_word_list) / 2)
+        less_negative_word = (
+            sum(text.count(word) for word in self.less_negative_word_list) / 2
+        )
 
-        reported_negativ = [word for word in self.negative_word_list if text.count(word) >=2]
-        reported_less_negativ = [word for word in self.less_negative_word_list if text.count(word) >=2]
+        # Returns a list of all problematic or less expressive words that appear more than once in the text
+        reported_negativ = [
+            word for word in self.negative_word_list if text.count(word) >= 2
+        ]
+        reported_less_negativ = [
+            word for word in self.less_negative_word_list if text.count(word) >= 2
+        ]
 
         if reported_negativ and reported_less_negativ:
-            bds_percent = (((negative_word * 1.8) + (less_negative_word * 2)) / len(text.split())) * 100
+            bds_percent = (
+                ((negative_word * 1.8) + (less_negative_word * 2)) / len(text.split())
+            ) * 100
 
         elif reported_negativ and not reported_less_negativ:
-            bds_percent = (((negative_word * 1.8) + less_negative_word) / len(text.split())) * 100
+            bds_percent = (
+                ((negative_word * 1.8) + less_negative_word) / len(text.split())
+            ) * 100
 
         elif reported_less_negativ and not reported_negativ:
-            bds_percent = ((negative_word + (less_negative_word * 2)) / len(text.split())) * 100
+            bds_percent = (
+                (negative_word + (less_negative_word * 2)) / len(text.split())
+            ) * 100
 
         else:
-            bds_percent = ((negative_word + less_negative_word) / len(text.split())) * 100
-
+            bds_percent = (
+                (negative_word + less_negative_word) / len(text.split())
+            ) * 100
 
         object["bds_percent"] = bds_percent
 
-        threshold = (5) 
+        threshold = 5
+
         object["is_bds"] = True if object["bds_percent"] >= threshold else False
-        
-        if negative_word > 3: 
+
+        if negative_word > 3:
             object["bds_threat_level"] = "high"
             object["is_bds"] = True
-            
+
         else:
             object["bds_threat_level"] = (
-            "none" if object["bds_percent"] <= (5)
-            else "medium" if object["bds_percent"] <= 10
-            else "high"
-        )
-            
+                "none"
+                if object["bds_percent"] <= 5
+                else "medium" if object["bds_percent"] <= 10 else "high"
+            )
+
         return object
-
-
-

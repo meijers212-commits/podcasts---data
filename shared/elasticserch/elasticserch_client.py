@@ -1,16 +1,15 @@
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk, BulkIndexError
-from logger import logger
 
 class ElasticsearchClient:
 
-    def __init__(self, config):
+    def __init__(self, logger, elastic_uri, elastic_index):
 
-        self.config = config
+        self.elastic_index = elastic_index
 
-        self.logger =logger
+        self.logger = logger
 
-        self.es_client = Elasticsearch(self.config.ES_URI)
+        self.es_client = Elasticsearch(elastic_uri)
 
         mapping = {
             "mappings": {
@@ -19,6 +18,7 @@ class ElasticsearchClient:
                     "file_size": {"type": "integer"},
                     "file_size_in_MB": {"type": "integer"},
                     "create_time": {"type": "text"},
+                    "file_text": {"type": "text"},
                     "bds_percent": {"type": "integer"},
                     "is_bds": {"type": "boolean"},
                     "bds_threat_level": {"type": "keyword"},
@@ -27,16 +27,16 @@ class ElasticsearchClient:
         }
 
         
-        if not self.es_client.indices.exists(index=self.config.ES_INDEX):
-            self.es_client.indices.create(index=self.config.ES_INDEX, body=mapping)
+        if not self.es_client.indices.exists(index=elastic_index):
+            self.es_client.indices.create(index=elastic_index, body=mapping)
 
-        if self.es_client.indices.exists(index=self.config.ES_INDEX):
-            self.logger.info(f"index: {self.config.ES_INDEX} created and ready!")
+        if self.es_client.indices.exists(index=elastic_index):
+            self.logger.info(f"index: {elastic_index} created and ready!")
 
     def index_record(self, record):
 
         res = self.es_client.index(
-            index=self.config.ES_INDEX, id=str(record.get("id", "")), document=record
+            index=self.elastic_index, id=str(record.get("id", "")), document=record
         )
 
         self.logger.info(f"record indexed with id: {res['_id']}")
@@ -45,13 +45,14 @@ class ElasticsearchClient:
 
         actions = [
             {
-                "_index": self.config.ES_INDEX,
+                "_index": self.elastic_index,
                 "_id": doc["id"],
                 "_source": {
                     "file_name": doc["file_name"],
                     "file_size": doc["file_size"],
                     "file_size_in_MB": doc["file_size_in_MB"],
                     "create_time": doc["create_time"],
+                    "file_text": doc["file_text"],
                     "bds_percent": doc["bds_percent"],
                     "is_bds": doc["is_bds"],
                     "bds_threat_level": doc["bds_threat_level"],
@@ -63,11 +64,11 @@ class ElasticsearchClient:
         try:
 
             bulk(self.es_client, actions)
-            self.logger.info(f"Data successfully indexed in {self.config.ES_INDEX} index.")
+            self.logger.info(f"Data successfully indexed in {self.elastic_index} index.")
 
         except BulkIndexError as e: 
 
-            self.logger.error(f"Failed to index documents to '{self.config.ES_INDEX}':") 
+            self.logger.error(f"Failed to index documents to '{self.elastic_index}':") 
             for err in e.errors:
 
                 self.logger.error(err)

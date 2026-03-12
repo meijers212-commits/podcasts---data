@@ -1,9 +1,9 @@
 import speech_recognition as sr
 from os import path
-from logger import logger
 
 
-def speech_to_text(file_path):
+
+def speech_to_text(file_path, logger):
     # audio = sr.AudioData.from_file(file_path)
     
     r = sr.Recognizer()
